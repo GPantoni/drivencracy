@@ -47,7 +47,7 @@ export async function listPoolChoices(req, res) {
 
     const poolChoices = await db
       .collection("choices")
-      .find({ poolId: id })
+      .find({ poolId: new ObjectId(id) })
       .toArray();
     // console.log(poolChoices);
     return res.send(poolChoices);
