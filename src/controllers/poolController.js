@@ -12,14 +12,13 @@ export async function createPool(req, res) {
       expireAt: expireDate,
     };
   }
-
-  console.log(pool);
+  // console.log(pool);
 
   try {
     await db.collection("pools").insertOne(pool);
     res.sendStatus(201);
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     res.sendStatus(500);
   }
 }
@@ -29,7 +28,7 @@ export async function listPools(req, res) {
     const pools = await db.collection("pools").find({}).toArray();
     res.send(pools);
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     res.sendStatus(500);
   }
 }
@@ -38,12 +37,14 @@ export async function listPoolChoices(req, res) {
   const { id } = req.params;
   // console.log(id);
 
-  const pool = await db.collection("pools").findOne({ _id: new ObjectId(id) });
-  if (!pool) {
-    return res.sendStatus(404);
-  }
-
   try {
+    const pool = await db
+      .collection("pools")
+      .findOne({ _id: new ObjectId(id) });
+    if (!pool) {
+      return res.sendStatus(404);
+    }
+
     const poolChoices = await db
       .collection("choices")
       .find({ poolId: id })
@@ -51,7 +52,7 @@ export async function listPoolChoices(req, res) {
     // console.log(poolChoices);
     return res.send(poolChoices);
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     res.sendStatus(500);
   }
 }
