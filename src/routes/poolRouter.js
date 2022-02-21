@@ -4,6 +4,7 @@ import {
   createPool,
   listPools,
   listPoolChoices,
+  poolResult,
 } from "../controllers/poolController.js";
 
 const poolRouter = Router();
@@ -11,5 +12,6 @@ const poolRouter = Router();
 poolRouter.post("/pool", validatePoolSchema, createPool);
 poolRouter.get("/pool", listPools);
 poolRouter.get("/pool/:id/choice", listPoolChoices);
+poolRouter.get("/pool/:id/result", poolResult);
 
 export default poolRouter;
