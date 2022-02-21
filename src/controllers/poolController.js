@@ -56,3 +56,52 @@ export async function listPoolChoices(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function poolResult(req, res) {
+  const { id } = req.params;
+  let mostVotedChoice = {
+    title: "Nenhuma opção recebeu votos",
+    votes: 0,
+  };
+
+  try {
+    const isAPool = await db
+      .collection("pools")
+      .findOne({ _id: new ObjectId(id) });
+    if (!isAPool) {
+      return res.sendStatus(404);
+    }
+
+    const poolChoices = await db
+      .collection("choices")
+      .find({ poolId: isAPool._id })
+      .toArray();
+    // console.log(poolChoices);
+    // poolChoices.forEach(async (choice) => {
+    for (const choice of poolChoices) {
+      // console.log(choice);
+      const votes = await db
+        .collection("votes")
+        .find({ choiceId: choice._id })
+        .toArray();
+      console.log(choice.title);
+      console.log(votes.length);
+      console.log(mostVotedChoice.votes);
+      if (votes.length > mostVotedChoice.votes) {
+        mostVotedChoice.title = choice.title;
+        mostVotedChoice.votes = votes.length;
+      }
+    }
+    console.log(mostVotedChoice);
+
+    const result = {
+      ...isAPool,
+      result: { ...mostVotedChoice },
+    };
+
+    res.status(200).send(result);
+  } catch (error) {
+    console.error(error.message);
+    res.sendStatus(500);
+  }
+}
