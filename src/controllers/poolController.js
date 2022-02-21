@@ -12,7 +12,6 @@ export async function createPool(req, res) {
       expireAt: expireDate,
     };
   }
-  // console.log(pool);
 
   try {
     await db.collection("pools").insertOne(pool);
@@ -35,7 +34,6 @@ export async function listPools(req, res) {
 
 export async function listPoolChoices(req, res) {
   const { id } = req.params;
-  // console.log(id);
 
   try {
     const pool = await db
@@ -49,7 +47,6 @@ export async function listPoolChoices(req, res) {
       .collection("choices")
       .find({ poolId: new ObjectId(id) })
       .toArray();
-    // console.log(poolChoices);
     return res.send(poolChoices);
   } catch (error) {
     console.error(error.message);
@@ -76,23 +73,16 @@ export async function poolResult(req, res) {
       .collection("choices")
       .find({ poolId: isAPool._id })
       .toArray();
-    // console.log(poolChoices);
-    // poolChoices.forEach(async (choice) => {
     for (const choice of poolChoices) {
-      // console.log(choice);
       const votes = await db
         .collection("votes")
         .find({ choiceId: choice._id })
         .toArray();
-      console.log(choice.title);
-      console.log(votes.length);
-      console.log(mostVotedChoice.votes);
       if (votes.length > mostVotedChoice.votes) {
         mostVotedChoice.title = choice.title;
         mostVotedChoice.votes = votes.length;
       }
     }
-    console.log(mostVotedChoice);
 
     const result = {
       ...isAPool,
